@@ -689,16 +689,32 @@ function showToast(msg, isErr) {
 }
 
 // ===== INIT =====
-const saved = localStorage.getItem('thesis_creator_data');
-if (saved) { try { applyData(JSON.parse(saved)); } catch(e){} }
-updateOverview();
+async function init() {
+    const saved = localStorage.getItem('thesis_creator_data');
+    if (saved) {
+        try { applyData(JSON.parse(saved)); } catch(e){}
+    } else {
+        // No local data - try loading pre-filled data from data.json
+        try {
+            const res = await fetch('data.json');
+            if (res.ok) {
+                const prefill = await res.json();
+                applyData(prefill);
+                localStorage.setItem('thesis_creator_data', JSON.stringify(prefill));
+                showToast('Pre-filled research data loaded');
+            }
+        } catch(e) { /* no prefill available */ }
+    }
+    updateOverview();
 
-if (ghToken) {
-    syncFromGithub();
-} else {
-    setSyncStatus('pending', 'Not connected');
-    showSetup();
+    if (ghToken) {
+        syncFromGithub();
+    } else {
+        setSyncStatus('pending', 'Not connected');
+        showSetup();
+    }
 }
+init();
 </script>
 </body>
 </html>
