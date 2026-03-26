@@ -3,8 +3,8 @@
     "bio": "🇩🇪 Ich bereite dich auf die B1-Prüfung vor.\n🎯Alles für B1 - einfach erklärt!\n🏆 19 Jahre Erfahrung |15000+ Teilnehmende\n🔥 Grammatik-Crashcourse👇\nwww.language-progress.com/crashcourse",
     "followers": "184,510",
     "posts": "515",
-    "authority": "",
-    "quality": "",
+    "authority": "The subject doesn't show herself as a teacher, she more so blends with the topic itself by getting into characters and using no extended introductions to videos. She rather presents the language itself.",
+    "quality": "The German is mostly correc",
     "psr": "",
     "selling": "",
     "freeform": "",
@@ -49,8 +49,12 @@
       "Grammar",
       "Common mistakes"
     ],
-    "signals": [],
-    "psrtags": [],
+    "signals": [
+      "Face always visible"
+    ],
+    "psrtags": [
+      "Shows vulnerability"
+    ],
     "offerings": []
   },
   "ania": {
@@ -403,5 +407,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-26T15:32:46.880Z"
+  "_lastSaved": "2026-03-26T15:35:54.463Z"
 }
