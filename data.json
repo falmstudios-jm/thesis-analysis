@@ -63,7 +63,7 @@
     "bio": "🇩🇪 Uczę dorosłych mówić po niemiecku\n💭 Potocznie. Naturalnie. Bez chaosu i stresu.\n❌ Niemiecki nie chce ruszyć? Odkręcimy to!\n⤹ Zapis na nasze lekcje\nlinktr.ee/ania_germania",
     "followers": "85,282",
     "posts": "668",
-    "authority": "",
+    "authority": "I liked her way more than Paul",
     "quality": "",
     "psr": "",
     "selling": "",
@@ -116,9 +116,13 @@
     "psrtags": [
       "Direct ",
       "Humor",
-      "Responds to comments"
+      "Responds to comments",
+      "Shows vulnerability"
     ],
-    "offerings": []
+    "offerings": [
+      "Private lessons",
+      "Group classes"
+    ]
   },
   "patrycja": {
     "bio": "",
@@ -420,5 +424,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-26T18:43:00.891Z"
+  "_lastSaved": "2026-03-26T18:44:12.876Z"
 }
