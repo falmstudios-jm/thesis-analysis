@@ -55,7 +55,9 @@
     "psrtags": [
       "Shows vulnerability"
     ],
-    "offerings": []
+    "offerings": [
+      "Private lessons"
+    ]
   },
   "ania": {
     "bio": "",
@@ -407,5 +409,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-26T15:44:10.809Z"
+  "_lastSaved": "2026-03-26T15:45:25.891Z"
 }
