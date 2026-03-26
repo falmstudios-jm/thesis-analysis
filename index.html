@@ -6,49 +6,51 @@
     <title>Creator Analysis - Jonas Thesis</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --surface: #1e293b;
-            --surface2: #334155;
-            --accent: #38bdf8;
-            --accent2: #818cf8;
-            --green: #4ade80;
-            --text: #e2e8f0;
-            --muted: #94a3b8;
-            --border: #475569;
-            --red: #f87171;
+            --bg: #0f172a; --surface: #1e293b; --surface2: #334155;
+            --accent: #38bdf8; --accent2: #818cf8; --green: #4ade80;
+            --text: #e2e8f0; --muted: #94a3b8; --border: #475569;
+            --red: #f87171; --yellow: #fbbf24;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
+            background: var(--bg); color: var(--text); min-height: 100vh;
         }
         .header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 16px 24px;
-            position: sticky; top: 0; z-index: 100;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            padding: 16px 24px; position: sticky; top: 0; z-index: 100;
         }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
         .header h1 { font-size: 1.3em; color: var(--accent); }
-        .header p { font-size: 0.85em; color: var(--muted); margin-top: 2px; }
-        .header-actions { display: flex; gap: 8px; margin-top: 8px; }
+        .header p { font-size: 0.82em; color: var(--muted); margin-top: 2px; }
+        .header-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+        .sync-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px; border-radius: 6px; font-size: 0.78em; font-weight: 600;
+        }
+        .sync-status.ok { background: rgba(74,222,128,0.15); color: var(--green); }
+        .sync-status.pending { background: rgba(251,191,36,0.15); color: var(--yellow); }
+        .sync-status.error { background: rgba(248,113,113,0.15); color: var(--red); }
+        .sync-dot { width: 8px; height: 8px; border-radius: 50%; }
+        .sync-status.ok .sync-dot { background: var(--green); }
+        .sync-status.pending .sync-dot { background: var(--yellow); }
+        .sync-status.error .sync-dot { background: var(--red); }
 
         .tabs {
             display: flex; gap: 4px; padding: 12px 24px;
             background: var(--surface); border-bottom: 1px solid var(--border);
-            overflow-x: auto; position: sticky; top: 80px; z-index: 99;
+            overflow-x: auto; position: sticky; top: 90px; z-index: 99;
         }
         .tab {
-            padding: 10px 18px; background: transparent; border: 1px solid var(--border);
+            padding: 10px 16px; background: transparent; border: 1px solid var(--border);
             color: var(--muted); cursor: pointer; border-radius: 8px;
-            font-size: 0.85em; white-space: nowrap; transition: all 0.2s;
+            font-size: 0.83em; white-space: nowrap; transition: all 0.2s;
         }
         .tab:hover { background: var(--surface2); color: var(--text); }
         .tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
-        .tab .status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; }
-        .tab .status.done { background: var(--green); }
-        .tab .status.partial { background: #fbbf24; }
+        .tab .st { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 5px; }
+        .tab .st.done { background: var(--green); }
+        .tab .st.partial { background: var(--yellow); }
 
         .container { max-width: 960px; margin: 0 auto; padding: 24px; }
 
@@ -63,7 +65,7 @@
             display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
             cursor: pointer; user-select: none;
         }
-        .section-header h2 { font-size: 1.1em; color: var(--accent); }
+        .section-header h2 { font-size: 1.05em; color: var(--accent); }
         .section-num {
             background: var(--accent); color: var(--bg); width: 26px; height: 26px;
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
@@ -84,8 +86,7 @@
         textarea { min-height: 80px; resize: vertical; }
 
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-        @media (max-width: 640px) { .row, .row3 { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .row { grid-template-columns: 1fr; } }
 
         .checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
         .check-item {
@@ -103,23 +104,9 @@
         .radio-item:hover { border-color: var(--accent); }
         .radio-item.selected { background: var(--accent); color: var(--bg); border-color: var(--accent); }
 
-        .error-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
-        .error-table th, .error-table td {
-            padding: 8px; border: 1px solid var(--border); font-size: 0.85em; text-align: left;
-        }
-        .error-table th { background: var(--surface2); color: var(--muted); }
-        .error-table input, .error-table select {
-            background: transparent; border: none; color: var(--text); width: 100%; padding: 4px;
-        }
-        .add-row-btn {
-            margin-top: 6px; padding: 6px 12px; background: var(--surface2); border: 1px dashed var(--border);
-            color: var(--muted); border-radius: 6px; cursor: pointer; font-size: 0.8em;
-        }
-        .add-row-btn:hover { border-color: var(--accent); color: var(--accent); }
-
         .btn {
-            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
-            font-size: 0.9em; font-weight: 600; transition: all 0.2s;
+            padding: 8px 16px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.85em; font-weight: 600; transition: all 0.2s;
         }
         .btn-accent { background: var(--accent); color: var(--bg); }
         .btn-accent:hover { filter: brightness(1.1); }
@@ -127,11 +114,9 @@
         .btn-green:hover { filter: brightness(1.1); }
         .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
         .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-red { background: var(--red); color: var(--bg); }
+        .btn-red { background: transparent; border: 1px solid var(--red); color: var(--red); }
 
-        .progress {
-            background: var(--bg); border-radius: 10px; height: 6px; margin: 8px 0; overflow: hidden;
-        }
+        .progress { background: var(--bg); border-radius: 10px; height: 6px; margin: 8px 0; overflow: hidden; }
         .progress-fill {
             height: 100%; background: linear-gradient(90deg, var(--accent), var(--green));
             border-radius: 10px; transition: width 0.4s;
@@ -141,10 +126,10 @@
         .toast {
             position: fixed; bottom: 20px; right: 20px; padding: 12px 20px;
             background: var(--green); color: var(--bg); border-radius: 8px;
-            font-weight: 600; font-size: 0.9em; opacity: 0; transition: opacity 0.3s;
-            z-index: 1000;
+            font-weight: 600; font-size: 0.9em; opacity: 0; transition: opacity 0.3s; z-index: 1000;
         }
         .toast.show { opacity: 1; }
+        .toast.err { background: var(--red); }
 
         .prefilled { border-left: 3px solid var(--accent2) !important; }
         .prefilled-badge {
@@ -158,22 +143,59 @@
             background: var(--surface); border-radius: 12px; padding: 20px;
             border: 1px solid var(--border); margin-bottom: 12px;
         }
-        .overview-card h3 { color: var(--accent); margin-bottom: 8px; }
-        .stat { display: inline-block; margin-right: 16px; }
-        .stat-val { font-size: 1.4em; font-weight: 700; color: var(--text); }
-        .stat-label { font-size: 0.75em; color: var(--muted); }
+        .overview-card h3 { color: var(--accent); margin-bottom: 8px; font-size: 1em; }
+
+        .setup-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        .setup-box {
+            background: var(--surface); border-radius: 16px; padding: 32px;
+            max-width: 500px; width: 100%; border: 1px solid var(--border);
+        }
+        .setup-box h2 { color: var(--accent); margin-bottom: 8px; }
+        .setup-box p { color: var(--muted); font-size: 0.9em; margin-bottom: 16px; line-height: 1.5; }
+        .setup-box input { margin-bottom: 12px; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
+<div class="setup-modal hidden" id="setupModal">
+    <div class="setup-box">
+        <h2>Connect to GitHub</h2>
+        <p>Enter a GitHub Personal Access Token to save data directly to the repo. The token needs <strong>repo</strong> scope.<br>
+        <a href="https://github.com/settings/tokens/new?scopes=repo&description=thesis-analysis" target="_blank" style="color:var(--accent)">Create token here</a></p>
+        <div class="form-group">
+            <label>GitHub Token</label>
+            <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxx">
+        </div>
+        <div style="display:flex;gap:8px">
+            <button class="btn btn-accent" onclick="saveToken()">Connect</button>
+            <button class="btn btn-ghost" onclick="skipToken()">Use Offline Only</button>
+        </div>
+    </div>
+</div>
+
 <div class="header">
-    <h1>Creator Analysis Tool</h1>
-    <p>Jonas Martens - BA Thesis: Polish German-Teaching Creators on Instagram</p>
+    <div class="header-top">
+        <div>
+            <h1>Creator Analysis Tool</h1>
+            <p>Jonas Martens - BA Thesis: Polish German-Teaching Creators on Instagram</p>
+        </div>
+        <div class="sync-status pending" id="syncStatus">
+            <span class="sync-dot"></span>
+            <span id="syncText">Checking...</span>
+        </div>
+    </div>
     <div class="header-actions">
-        <button class="btn btn-green" onclick="exportAll()">Export All (JSON)</button>
+        <button class="btn btn-green" onclick="syncToGithub()">Save to GitHub</button>
+        <button class="btn btn-accent" onclick="syncFromGithub()">Load from GitHub</button>
+        <button class="btn btn-ghost" onclick="exportJSON()">Export JSON</button>
         <button class="btn btn-ghost" onclick="exportCSV()">Export CSV</button>
-        <button class="btn btn-ghost" onclick="importData()">Import Data</button>
-        <button class="btn btn-red" onclick="clearAll()">Reset All</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('importFile').click()">Import</button>
+        <button class="btn btn-ghost" onclick="showSetup()">Settings</button>
+        <button class="btn btn-red" onclick="clearAll()">Reset</button>
         <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
     </div>
 </div>
@@ -194,35 +216,48 @@
     <div id="panels"></div>
 </div>
 
-<div class="toast" id="toast">Saved!</div>
+<div class="toast" id="toast"></div>
 
 <script>
+// ===== CONFIG =====
+const REPO_OWNER = 'falmstudios-jm';
+const REPO_NAME = 'thesis-analysis';
+const DATA_FILE = 'data.json';
+const BRANCH = 'main';
+
+// ===== CREATORS =====
 const CREATORS = [
-    { id: 'paula', handle: '@deutsch.frag.paula', name: 'Paulina Boinska', followers: '', prefill: {} },
-    { id: 'ania', handle: '@ania_germania', name: 'Anna Mazurek', followers: '', prefill: {} },
-    { id: 'lucy', handle: '@deutsch.mit.lucy', name: '\u0141ucja B\u0142aszczyk', followers: '', prefill: {} },
-    { id: 'olivia', handle: '@_szprechaj', name: 'Olivia Miku\u0142a', followers: '', prefill: {} },
-    { id: 'natalia', handle: '@niemieckizprzyjemnoscia', name: 'Natalia Kamysz', followers: '', prefill: {} }
+    { id: 'paula', handle: '@deutsch.frag.paula', name: 'Paulina Boinska' },
+    { id: 'ania', handle: '@ania_germania', name: 'Anna Mazurek' },
+    { id: 'lucy', handle: '@deutsch.mit.lucy', name: '\u0141ucja B\u0142aszczyk' },
+    { id: 'olivia', handle: '@_szprechaj', name: 'Olivia Miku\u0142a' },
+    { id: 'natalia', handle: '@niemieckizprzyjemnoscia', name: 'Natalia Kamysz' }
 ];
 
+// ===== SECTIONS =====
 const SECTIONS = [
     { num: 1, title: 'Profile & Bio', fields: [
-        { id: 'handle', label: 'Instagram Handle', type: 'text', required: true, prefillKey: 'handle' },
-        { id: 'name', label: 'Full Name', type: 'text', required: true, prefillKey: 'name' },
+        { id: 'handle', label: 'Instagram Handle', type: 'text', required: true },
+        { id: 'name', label: 'Full Name', type: 'text', required: true },
         { id: 'analysis_date', label: 'Date of Analysis', type: 'date' },
-        { id: 'follower_count', label: 'Follower Count', type: 'number', prefillKey: 'followers' },
-        { id: 'total_posts', label: 'Total Posts', type: 'number', prefillKey: 'posts' },
-        { id: 'bio_text', label: 'Exact Bio Text (copy verbatim from Instagram)', type: 'textarea', required: true, prefillKey: 'bio' },
+        { id: 'follower_count', label: 'Follower Count (Instagram)', type: 'number' },
+        { id: 'total_posts', label: 'Total Posts', type: 'number' },
+        { id: 'bio_text', label: 'Exact Bio Text (copy verbatim from Instagram)', type: 'textarea', required: true },
         { id: 'bio_languages', label: 'Languages Used in Bio', type: 'checks', options: ['Polish','German','English','Other'] },
         { id: 'bio_contains', label: 'Bio Contains', type: 'checks', options: [
             'Credential claims','Experience claims','Native speaker claim','Student/client counts',
             'Link to paid content','Other platforms mentioned','Email for contact','Hashtags'
         ]},
-        { id: 'other_platforms', label: 'Other Platforms & Links (TikTok, YouTube, website, etc.)', type: 'textarea', prefillKey: 'platforms' },
+        { id: 'other_platforms', label: 'Other Platforms & Links (TikTok, YouTube, website - include follower counts)', type: 'textarea' },
+        { id: 'tiktok_handle', label: 'TikTok Handle', type: 'text' },
+        { id: 'tiktok_followers', label: 'TikTok Followers', type: 'number' },
+        { id: 'youtube_handle', label: 'YouTube Channel', type: 'text' },
+        { id: 'youtube_subscribers', label: 'YouTube Subscribers', type: 'number' },
+        { id: 'website_url', label: 'Website URL', type: 'text' },
     ]},
     { num: 2, title: 'Credential Claims', fields: [
-        { id: 'explicit_claims', label: 'Explicit Claims (directly stated) - one per line: Claim | Exact Quote | Verifiable? (Yes/No)', type: 'textarea', prefillKey: 'claims' },
-        { id: 'implicit_claims', label: 'Implicit Claims (suggested but not stated) - one per line: What\'s Implied | How It\'s Suggested', type: 'textarea' },
+        { id: 'explicit_claims', label: 'Explicit Claims (one per line: Claim | Exact Quote | Verifiable? Yes/No)', type: 'textarea' },
+        { id: 'implicit_claims', label: 'Implicit Claims (one per line: What\'s Implied | How It\'s Suggested)', type: 'textarea' },
         { id: 'missing_credentials', label: 'Credentials NOT Mentioned (notable absences)', type: 'checks', options: [
             'University degree in German','Teaching certification (TEFL/DaF)',
             'Goethe-Institut certification','CEFR level achieved',
@@ -242,7 +277,7 @@ const SECTIONS = [
             'Expert/authoritative ("I\'ll teach you...")','Peer/friendly ("Let\'s learn together...")',
             'Humble ("I\'m still learning too...")','Other'
         ]},
-        { id: 'tone_notes', label: 'If "Other", describe:', type: 'text' },
+        { id: 'tone_notes', label: 'If "Other" tone, describe:', type: 'text' },
         { id: 'expertise_markers', label: 'Expertise Markers Used', type: 'checks', options: [
             'Technical grammar terminology','References to linguistic rules','Comparison with other languages',
             'Cultural explanations','Common mistake corrections','CEFR level references','Test preparation content'
@@ -262,15 +297,14 @@ const SECTIONS = [
         ]},
         { id: 'errors_observed', label: 'Errors Observed (one per line: Post Description | Error | Type)', type: 'textarea' },
         { id: 'quality_assessment', label: 'Overall Quality Assessment', type: 'radio', options: [
-            'No errors observed in sample','Minor errors (typos, minor slips)',
-            'Some errors (occasional grammar mistakes)','Significant errors (frequent/concerning)'
+            'No errors observed','Minor errors (typos)','Some errors (grammar mistakes)','Significant errors'
         ]},
         { id: 'accuracy_notes', label: 'Notes on Teaching Accuracy', type: 'textarea' },
     ]},
     { num: 5, title: 'Engagement Analysis', fields: [
         { id: 'avg_likes', label: 'Average Likes (across sample)', type: 'number' },
         { id: 'avg_comments', label: 'Average Comments (across sample)', type: 'number' },
-        { id: 'engagement_rate', label: 'Engagement Rate % (likes+comments / followers)', type: 'text' },
+        { id: 'engagement_rate', label: 'Engagement Rate %', type: 'text' },
         { id: 'comment_types', label: 'Types of Comments Observed', type: 'checks', options: [
             'Praise/thanks','Questions about German','Corrections from viewers',
             'Requests for topics','Testimonials','Off-topic'
@@ -288,7 +322,7 @@ const SECTIONS = [
             'Online courses','E-books/PDFs','Private lessons','Group classes',
             'Membership/subscription','Affiliate links','Sponsored content','Merchandise'
         ]},
-        { id: 'pricing', label: 'Pricing Information (if visible)', type: 'textarea', prefillKey: 'pricing' },
+        { id: 'pricing', label: 'Pricing Information (if visible)', type: 'textarea' },
         { id: 'sales_approach', label: 'Sales Approach', type: 'radio', options: [
             'Aggressive (frequent CTAs, urgency)','Moderate (regular but not pushy)',
             'Soft (occasional mentions)','None visible'
@@ -321,95 +355,152 @@ const SECTIONS = [
     ]},
 ];
 
-// Build UI
+// ===== GITHUB SYNC =====
+let ghToken = localStorage.getItem('gh_token') || '';
+let fileSha = null;
+
+function getHeaders() {
+    return { 'Authorization': 'token ' + ghToken, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
+}
+
+async function syncFromGithub() {
+    if (!ghToken) { showSetup(); return; }
+    setSyncStatus('pending', 'Loading...');
+    try {
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}?ref=${BRANCH}`, { headers: getHeaders() });
+        if (res.status === 404) { setSyncStatus('ok', 'No saved data yet'); return; }
+        if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+        const json = await res.json();
+        fileSha = json.sha;
+        const content = JSON.parse(atob(json.content.replace(/\n/g, '')));
+        localStorage.setItem('thesis_creator_data', JSON.stringify(content));
+        applyData(content);
+        setSyncStatus('ok', 'Loaded from GitHub');
+        showToast('Loaded from GitHub');
+    } catch (e) {
+        setSyncStatus('error', 'Load failed');
+        showToast('Error: ' + e.message, true);
+    }
+}
+
+async function syncToGithub() {
+    if (!ghToken) { showSetup(); return; }
+    const data = collectData();
+    data._lastSaved = new Date().toISOString();
+    setSyncStatus('pending', 'Saving...');
+    try {
+        // Get current sha first
+        const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}?ref=${BRANCH}`, { headers: getHeaders() });
+        if (getRes.ok) { fileSha = (await getRes.json()).sha; }
+        else if (getRes.status !== 404) throw new Error('GitHub API error: ' + getRes.status);
+
+        const body = {
+            message: 'Update creator analysis data - ' + new Date().toLocaleString(),
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+            branch: BRANCH
+        };
+        if (fileSha) body.sha = fileSha;
+
+        const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${DATA_FILE}`, {
+            method: 'PUT', headers: getHeaders(), body: JSON.stringify(body)
+        });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.message || res.status); }
+        const result = await res.json();
+        fileSha = result.content.sha;
+        setSyncStatus('ok', 'Saved to GitHub');
+        showToast('Saved to GitHub!');
+    } catch (e) {
+        setSyncStatus('error', 'Save failed');
+        showToast('Error: ' + e.message, true);
+    }
+}
+
+function setSyncStatus(state, text) {
+    const el = document.getElementById('syncStatus');
+    const textEl = document.getElementById('syncText');
+    el.className = 'sync-status ' + state;
+    textEl.textContent = text;
+}
+
+function showSetup() { document.getElementById('setupModal').classList.remove('hidden'); }
+function saveToken() {
+    ghToken = document.getElementById('tokenInput').value.trim();
+    if (ghToken) {
+        localStorage.setItem('gh_token', ghToken);
+        document.getElementById('setupModal').classList.add('hidden');
+        syncFromGithub();
+    }
+}
+function skipToken() {
+    document.getElementById('setupModal').classList.add('hidden');
+    setSyncStatus('pending', 'Offline mode');
+}
+
+// ===== BUILD UI =====
 const tabsEl = document.getElementById('tabs');
 const panelsEl = document.getElementById('panels');
 
-CREATORS.forEach((c, i) => {
-    // Tab
+CREATORS.forEach(c => {
     const btn = document.createElement('button');
-    btn.className = 'tab';
-    btn.id = `tab-${c.id}`;
+    btn.className = 'tab'; btn.id = `tab-${c.id}`;
     btn.onclick = () => showTab(c.id);
-    btn.innerHTML = `${c.handle} <span class="status" id="status-${c.id}"></span>`;
+    btn.innerHTML = `${c.handle} <span class="st" id="st-${c.id}"></span>`;
     tabsEl.appendChild(btn);
 
-    // Panel
     const panel = document.createElement('div');
-    panel.className = 'creator-panel';
-    panel.id = `panel-${c.id}`;
-    panel.innerHTML = buildCreatorForm(c);
+    panel.className = 'creator-panel'; panel.id = `panel-${c.id}`;
+    panel.innerHTML = buildForm(c);
     panelsEl.appendChild(panel);
 });
 
-function buildCreatorForm(creator) {
-    let html = `<h2 style="margin-bottom:16px;color:var(--accent)">${creator.name} <span style="color:var(--muted);font-weight:400">${creator.handle}</span></h2>`;
-    html += `<div class="progress"><div class="progress-fill" id="progress-${creator.id}" style="width:0%"></div></div>`;
-    html += `<div class="progress-text" id="progress-text-${creator.id}">0% complete</div>`;
-
-    SECTIONS.forEach(sec => {
-        html += `<div class="section">`;
-        html += `<div class="section-header" onclick="toggleSection('${creator.id}-sec${sec.num}')">`;
-        html += `<span class="section-num">${sec.num}</span>`;
-        html += `<h2>${sec.title}</h2>`;
-        html += `<span class="section-toggle" id="toggle-${creator.id}-sec${sec.num}">-</span>`;
-        html += `</div>`;
-        html += `<div class="section-body" id="body-${creator.id}-sec${sec.num}">`;
-
-        sec.fields.forEach(f => {
-            const fid = `${creator.id}_${f.id}`;
-            const isPrefilled = f.prefillKey && creator.prefill && creator.prefill[f.prefillKey];
-            html += `<div class="form-group">`;
-            html += `<label class="${f.required ? 'required' : ''}">${f.label}`;
-            if (isPrefilled) html += `<span class="prefilled-badge">pre-filled</span>`;
-            html += `</label>`;
-
-            if (f.type === 'text' || f.type === 'number' || f.type === 'date') {
-                const val = isPrefilled ? creator.prefill[f.prefillKey] : '';
-                html += `<input type="${f.type}" id="${fid}" data-field="${f.id}" data-creator="${creator.id}" `;
-                html += `value="${escHtml(String(val))}" onchange="save()" class="${isPrefilled ? 'prefilled' : ''}">`;
-            } else if (f.type === 'textarea') {
-                const val = isPrefilled ? creator.prefill[f.prefillKey] : '';
-                html += `<textarea id="${fid}" data-field="${f.id}" data-creator="${creator.id}" `;
-                html += `onchange="save()" class="${isPrefilled ? 'prefilled' : ''}">${escHtml(String(val))}</textarea>`;
-            } else if (f.type === 'checks') {
-                html += `<div class="checks">`;
-                f.options.forEach(opt => {
-                    html += `<label class="check-item"><input type="checkbox" id="${fid}_${slugify(opt)}" `;
-                    html += `data-field="${f.id}" data-opt="${opt}" data-creator="${creator.id}" onchange="save()"> ${opt}</label>`;
+function buildForm(c) {
+    let h = `<h2 style="margin-bottom:16px;color:var(--accent)">${c.name} <span style="color:var(--muted);font-weight:400">${c.handle}</span></h2>`;
+    h += `<div class="progress"><div class="progress-fill" id="prog-${c.id}" style="width:0%"></div></div>`;
+    h += `<div class="progress-text" id="progtxt-${c.id}">0%</div>`;
+    SECTIONS.forEach(s => {
+        h += `<div class="section"><div class="section-header" onclick="tog('${c.id}-s${s.num}')">`;
+        h += `<span class="section-num">${s.num}</span><h2>${s.title}</h2>`;
+        h += `<span class="section-toggle" id="tgl-${c.id}-s${s.num}">-</span></div>`;
+        h += `<div class="section-body" id="bd-${c.id}-s${s.num}">`;
+        s.fields.forEach(f => {
+            const fid = `${c.id}_${f.id}`;
+            h += `<div class="form-group"><label class="${f.required?'required':''}">${f.label}</label>`;
+            if (f.type==='text'||f.type==='number'||f.type==='date') {
+                h += `<input type="${f.type}" id="${fid}" data-f="${f.id}" data-c="${c.id}" onchange="autoSave()">`;
+            } else if (f.type==='textarea') {
+                h += `<textarea id="${fid}" data-f="${f.id}" data-c="${c.id}" onchange="autoSave()"></textarea>`;
+            } else if (f.type==='checks') {
+                h += `<div class="checks">`;
+                f.options.forEach(o => {
+                    h += `<label class="check-item"><input type="checkbox" id="${fid}_${slug(o)}" data-f="${f.id}" data-o="${o}" data-c="${c.id}" onchange="autoSave()"> ${o}</label>`;
                 });
-                html += `</div>`;
-            } else if (f.type === 'radio') {
-                html += `<div class="radio-group" id="${fid}_group">`;
-                f.options.forEach(opt => {
-                    html += `<div class="radio-item" data-field="${f.id}" data-opt="${opt}" data-creator="${creator.id}" `;
-                    html += `onclick="selectRadio(this)">${opt}</div>`;
+                h += `</div>`;
+            } else if (f.type==='radio') {
+                h += `<div class="radio-group" id="${fid}_g">`;
+                f.options.forEach(o => {
+                    h += `<div class="radio-item" data-f="${f.id}" data-o="${o}" data-c="${c.id}" onclick="selRadio(this)">${o}</div>`;
                 });
-                html += `</div>`;
+                h += `</div>`;
             }
-            html += `</div>`;
+            h += `</div>`;
         });
-
-        html += `</div></div>`;
+        h += `</div></div>`;
     });
-
-    return html;
+    return h;
 }
 
-function escHtml(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+$/,''); }
+function slug(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/_+$/,''); }
 
-function selectRadio(el) {
+function selRadio(el) {
     el.parentElement.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
-    el.classList.add('selected');
-    save();
+    el.classList.add('selected'); autoSave();
 }
 
-function toggleSection(id) {
-    const body = document.getElementById('body-' + id);
-    const toggle = document.getElementById('toggle-' + id);
-    body.classList.toggle('collapsed');
-    toggle.textContent = body.classList.contains('collapsed') ? '+' : '-';
+function tog(id) {
+    const b = document.getElementById('bd-'+id);
+    const t = document.getElementById('tgl-'+id);
+    b.classList.toggle('collapsed');
+    t.textContent = b.classList.contains('collapsed') ? '+' : '-';
 }
 
 let activeTab = 'overview';
@@ -418,217 +509,196 @@ function showTab(id) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.creator-panel').forEach(p => p.classList.remove('active'));
     document.getElementById('overview-panel').classList.remove('active');
-
-    if (id === 'overview') {
+    if (id==='overview') {
         document.querySelector('.tabs .tab:first-child').classList.add('active');
         document.getElementById('overview-panel').classList.add('active');
         updateOverview();
     } else {
-        document.getElementById('tab-' + id).classList.add('active');
-        document.getElementById('panel-' + id).classList.add('active');
+        document.getElementById('tab-'+id).classList.add('active');
+        document.getElementById('panel-'+id).classList.add('active');
     }
 }
 
+// ===== DATA =====
 function collectData() {
     const data = {};
     CREATORS.forEach(c => {
         data[c.id] = { handle: c.handle, name: c.name };
-        SECTIONS.forEach(sec => {
-            sec.fields.forEach(f => {
-                const fid = `${c.id}_${f.id}`;
-                if (f.type === 'text' || f.type === 'number' || f.type === 'date' || f.type === 'textarea') {
-                    const el = document.getElementById(fid);
-                    if (el) data[c.id][f.id] = el.value;
-                } else if (f.type === 'checks') {
-                    const checked = [];
-                    f.options.forEach(opt => {
-                        const cb = document.getElementById(`${fid}_${slugify(opt)}`);
-                        if (cb && cb.checked) checked.push(opt);
-                    });
-                    data[c.id][f.id] = checked;
-                } else if (f.type === 'radio') {
-                    const selected = document.querySelector(`#${fid}_group .radio-item.selected`);
-                    data[c.id][f.id] = selected ? selected.dataset.opt : '';
-                }
-            });
-        });
+        SECTIONS.forEach(s => s.fields.forEach(f => {
+            const fid = `${c.id}_${f.id}`;
+            if (f.type==='text'||f.type==='number'||f.type==='date'||f.type==='textarea') {
+                const el = document.getElementById(fid);
+                if (el) data[c.id][f.id] = el.value;
+            } else if (f.type==='checks') {
+                const arr = [];
+                f.options.forEach(o => {
+                    const cb = document.getElementById(`${fid}_${slug(o)}`);
+                    if (cb && cb.checked) arr.push(o);
+                });
+                data[c.id][f.id] = arr;
+            } else if (f.type==='radio') {
+                const sel = document.querySelector(`#${fid}_g .radio-item.selected`);
+                data[c.id][f.id] = sel ? sel.dataset.o : '';
+            }
+        }));
     });
     return data;
 }
 
-function save() {
-    const data = collectData();
-    localStorage.setItem('thesis_creator_data', JSON.stringify(data));
-    updateProgress();
-    showToast('Auto-saved');
-}
-
-function loadData() {
-    const saved = localStorage.getItem('thesis_creator_data');
-    if (!saved) return;
-    const data = JSON.parse(saved);
+function applyData(data) {
     CREATORS.forEach(c => {
         if (!data[c.id]) return;
-        SECTIONS.forEach(sec => {
-            sec.fields.forEach(f => {
-                const fid = `${c.id}_${f.id}`;
-                const val = data[c.id][f.id];
-                if (val === undefined) return;
-                if (f.type === 'text' || f.type === 'number' || f.type === 'date' || f.type === 'textarea') {
-                    const el = document.getElementById(fid);
-                    if (el) el.value = val;
-                } else if (f.type === 'checks' && Array.isArray(val)) {
-                    val.forEach(opt => {
-                        const cb = document.getElementById(`${fid}_${slugify(opt)}`);
-                        if (cb) cb.checked = true;
-                    });
-                } else if (f.type === 'radio' && val) {
-                    const items = document.querySelectorAll(`#${fid}_group .radio-item`);
-                    items.forEach(item => {
-                        if (item.dataset.opt === val) item.classList.add('selected');
-                    });
-                }
-            });
-        });
+        SECTIONS.forEach(s => s.fields.forEach(f => {
+            const fid = `${c.id}_${f.id}`;
+            const val = data[c.id][f.id];
+            if (val === undefined) return;
+            if (f.type==='text'||f.type==='number'||f.type==='date'||f.type==='textarea') {
+                const el = document.getElementById(fid);
+                if (el) el.value = val;
+            } else if (f.type==='checks' && Array.isArray(val)) {
+                val.forEach(o => {
+                    const cb = document.getElementById(`${fid}_${slug(o)}`);
+                    if (cb) cb.checked = true;
+                });
+            } else if (f.type==='radio' && val) {
+                document.querySelectorAll(`#${fid}_g .radio-item`).forEach(item => {
+                    if (item.dataset.o === val) item.classList.add('selected');
+                });
+            }
+        }));
     });
     updateProgress();
 }
 
-function getCompletionPercent(creatorId) {
-    let total = 0, filled = 0;
-    SECTIONS.forEach(sec => {
-        sec.fields.forEach(f => {
-            total++;
-            const fid = `${creatorId}_${f.id}`;
-            if (f.type === 'text' || f.type === 'number' || f.type === 'date' || f.type === 'textarea') {
-                const el = document.getElementById(fid);
-                if (el && el.value.trim()) filled++;
-            } else if (f.type === 'checks') {
-                let any = false;
-                f.options.forEach(opt => {
-                    const cb = document.getElementById(`${fid}_${slugify(opt)}`);
-                    if (cb && cb.checked) any = true;
-                });
-                if (any) filled++;
-            } else if (f.type === 'radio') {
-                const sel = document.querySelector(`#${fid}_group .radio-item.selected`);
-                if (sel) filled++;
-            }
-        });
-    });
-    return total > 0 ? Math.round((filled / total) * 100) : 0;
+let saveTimer = null;
+function autoSave() {
+    localStorage.setItem('thesis_creator_data', JSON.stringify(collectData()));
+    updateProgress();
+    // Debounced auto-sync to GitHub
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+        if (ghToken) syncToGithub();
+    }, 10000); // sync after 10s of inactivity
+}
+
+function getCompletion(cid) {
+    let t = 0, f = 0;
+    SECTIONS.forEach(s => s.fields.forEach(field => {
+        t++;
+        const fid = `${cid}_${field.id}`;
+        if (field.type==='text'||field.type==='number'||field.type==='date'||field.type==='textarea') {
+            const el = document.getElementById(fid);
+            if (el && el.value.trim()) f++;
+        } else if (field.type==='checks') {
+            let any = false;
+            field.options.forEach(o => { const cb = document.getElementById(`${fid}_${slug(o)}`); if (cb&&cb.checked) any=true; });
+            if (any) f++;
+        } else if (field.type==='radio') {
+            if (document.querySelector(`#${fid}_g .radio-item.selected`)) f++;
+        }
+    }));
+    return t > 0 ? Math.round((f/t)*100) : 0;
 }
 
 function updateProgress() {
-    let totalPct = 0;
+    let total = 0;
     CREATORS.forEach(c => {
-        const pct = getCompletionPercent(c.id);
-        totalPct += pct;
-        const bar = document.getElementById(`progress-${c.id}`);
-        const text = document.getElementById(`progress-text-${c.id}`);
-        if (bar) bar.style.width = pct + '%';
-        if (text) text.textContent = pct + '% complete';
-
-        const status = document.getElementById(`status-${c.id}`);
-        if (status) {
-            status.className = 'status';
-            if (pct === 100) status.classList.add('done');
-            else if (pct > 0) status.classList.add('partial');
-        }
+        const p = getCompletion(c.id);
+        total += p;
+        const bar = document.getElementById(`prog-${c.id}`);
+        const txt = document.getElementById(`progtxt-${c.id}`);
+        if (bar) bar.style.width = p+'%';
+        if (txt) txt.textContent = p+'%';
+        const st = document.getElementById(`st-${c.id}`);
+        if (st) { st.className = 'st'; if (p===100) st.classList.add('done'); else if (p>0) st.classList.add('partial'); }
     });
-    const overall = Math.round(totalPct / CREATORS.length);
-    const oBar = document.getElementById('overall-progress');
-    const oText = document.getElementById('overall-progress-text');
-    if (oBar) oBar.style.width = overall + '%';
-    if (oText) oText.textContent = overall + '% complete';
+    const avg = Math.round(total/CREATORS.length);
+    const ob = document.getElementById('overall-progress');
+    const ot = document.getElementById('overall-progress-text');
+    if (ob) ob.style.width = avg+'%';
+    if (ot) ot.textContent = avg+'% complete';
 }
 
 function updateOverview() {
-    const cards = document.getElementById('overview-cards');
-    let html = '';
+    let h = '';
     CREATORS.forEach(c => {
-        const pct = getCompletionPercent(c.id);
-        html += `<div class="overview-card">
-            <h3>${c.name} <span style="color:var(--muted);font-weight:400">${c.handle}</span></h3>
-            <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
-            <div class="progress-text">${pct}% complete</div>
-            <button class="btn btn-accent" style="margin-top:8px" onclick="showTab('${c.id}')">Edit</button>
-        </div>`;
+        const p = getCompletion(c.id);
+        h += `<div class="overview-card"><h3>${c.name} <span style="color:var(--muted);font-weight:400">${c.handle}</span></h3>
+        <div class="progress"><div class="progress-fill" style="width:${p}%"></div></div>
+        <div class="progress-text">${p}%</div>
+        <button class="btn btn-accent" style="margin-top:8px" onclick="showTab('${c.id}')">Edit</button></div>`;
     });
-    cards.innerHTML = html;
+    document.getElementById('overview-cards').innerHTML = h;
 }
 
-function exportAll() {
-    const data = collectData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'creator_analysis_' + new Date().toISOString().slice(0,10) + '.json';
-    a.click();
-    URL.revokeObjectURL(url);
+function exportJSON() {
+    const d = collectData(); d._exportDate = new Date().toISOString();
+    const b = new Blob([JSON.stringify(d,null,2)], {type:'application/json'});
+    dl(b, 'creator_analysis_'+new Date().toISOString().slice(0,10)+'.json');
 }
 
 function exportCSV() {
-    const data = collectData();
-    const allFields = [];
-    SECTIONS.forEach(sec => sec.fields.forEach(f => {
-        if (!allFields.includes(f.id)) allFields.push(f.id);
-    }));
-    let csv = 'creator,' + allFields.join(',') + '\n';
+    const d = collectData();
+    const fields = [];
+    SECTIONS.forEach(s => s.fields.forEach(f => { if (!fields.includes(f.id)) fields.push(f.id); }));
+    let csv = 'creator,' + fields.join(',') + '\n';
     CREATORS.forEach(c => {
         const row = [c.id];
-        allFields.forEach(fid => {
-            let val = data[c.id][fid];
-            if (Array.isArray(val)) val = val.join('; ');
-            val = String(val || '').replace(/"/g, '""');
-            if (val.includes(',') || val.includes('\n') || val.includes('"')) val = '"' + val + '"';
-            row.push(val);
+        fields.forEach(fid => {
+            let v = d[c.id][fid]; if (Array.isArray(v)) v = v.join('; ');
+            v = String(v||'').replace(/"/g,'""');
+            if (v.includes(',')||v.includes('\n')||v.includes('"')) v = '"'+v+'"';
+            row.push(v);
         });
         csv += row.join(',') + '\n';
     });
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'creator_analysis_' + new Date().toISOString().slice(0,10) + '.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+    dl(new Blob([csv],{type:'text/csv'}), 'creator_analysis_'+new Date().toISOString().slice(0,10)+'.csv');
 }
 
-function importData() { document.getElementById('importFile').click(); }
+function dl(blob, name) {
+    const u = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = u; a.download = name; a.click();
+    URL.revokeObjectURL(u);
+}
 
 function handleImport(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(ev) {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
         try {
-            const data = JSON.parse(ev.target.result);
-            localStorage.setItem('thesis_creator_data', JSON.stringify(data));
-            location.reload();
-        } catch(err) { alert('Invalid JSON file'); }
+            const d = JSON.parse(ev.target.result);
+            localStorage.setItem('thesis_creator_data', JSON.stringify(d));
+            applyData(d);
+            showToast('Imported!');
+        } catch(err) { alert('Invalid JSON'); }
     };
-    reader.readAsText(file);
+    r.readAsText(f);
 }
 
 function clearAll() {
-    if (confirm('Are you sure? This will delete all entered data.')) {
+    if (confirm('Delete ALL entered data? This cannot be undone.')) {
         localStorage.removeItem('thesis_creator_data');
         location.reload();
     }
 }
 
-function showToast(msg) {
+function showToast(msg, isErr) {
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1500);
+    t.textContent = msg; t.className = 'toast show' + (isErr ? ' err' : '');
+    setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-// Init
-loadData();
+// ===== INIT =====
+const saved = localStorage.getItem('thesis_creator_data');
+if (saved) { try { applyData(JSON.parse(saved)); } catch(e){} }
 updateOverview();
+
+if (ghToken) {
+    syncFromGithub();
+} else {
+    setSyncStatus('pending', 'Not connected');
+    showSetup();
+}
 </script>
 </body>
 </html>
