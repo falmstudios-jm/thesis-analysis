@@ -40,11 +40,15 @@
     "r8_topic": "Hotel room service call roleplay",
     "r8_notes": "She plays a character struggling to find the right words for \"the sink is clogged\". In the end of the reel she plays the receptionist saying \"Das Waschbecken ist verstopft\". Honestly I find this reel alright and helpful.",
     "r8_engagement": "180 / 3",
-    "lang": "",
-    "tone": "",
-    "gerquality": "",
-    "sales": "",
-    "topics": [],
+    "lang": "Mostly German",
+    "tone": "Relatable/casual",
+    "gerquality": "Minor slips only",
+    "sales": "None visible",
+    "topics": [
+      "Vocabulary",
+      "Grammar",
+      "Common mistakes"
+    ],
     "signals": [],
     "psrtags": [],
     "offerings": []
@@ -399,5 +403,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-26T15:31:23.198Z"
+  "_lastSaved": "2026-03-26T15:32:46.880Z"
 }
