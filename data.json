@@ -103,10 +103,21 @@
     "lang": "Mix of both",
     "tone": "Relatable/casual",
     "gerquality": "Significant errors",
-    "sales": "",
-    "topics": [],
-    "signals": [],
-    "psrtags": [],
+    "sales": "None visible",
+    "topics": [
+      "Vocabulary",
+      "Grammar",
+      "Pronunciation",
+      "Cultural content"
+    ],
+    "signals": [
+      "Face always visible"
+    ],
+    "psrtags": [
+      "Direct ",
+      "Humor",
+      "Responds to comments"
+    ],
     "offerings": []
   },
   "patrycja": {
@@ -409,5 +420,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-26T18:41:41.392Z"
+  "_lastSaved": "2026-03-26T18:43:00.891Z"
 }
