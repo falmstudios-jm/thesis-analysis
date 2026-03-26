@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Analysis - Jonas Thesis</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #334155;
+            --accent: #38bdf8;
+            --accent2: #818cf8;
+            --green: #4ade80;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: #475569;
+            --red: #f87171;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header h1 { font-size: 1.3em; color: var(--accent); }
+        .header p { font-size: 0.85em; color: var(--muted); margin-top: 2px; }
+        .header-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+        .tabs {
+            display: flex; gap: 4px; padding: 12px 24px;
+            background: var(--surface); border-bottom: 1px solid var(--border);
+            overflow-x: auto; position: sticky; top: 80px; z-index: 99;
+        }
+        .tab {
+            padding: 10px 18px; background: transparent; border: 1px solid var(--border);
+            color: var(--muted); cursor: pointer; border-radius: 8px;
+            font-size: 0.85em; white-space: nowrap; transition: all 0.2s;
+        }
+        .tab:hover { background: var(--surface2); color: var(--text); }
+        .tab.active { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+        .tab .status { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-left: 6px; }
+        .tab .status.done { background: var(--green); }
+        .tab .status.partial { background: #fbbf24; }
+
+        .container { max-width: 960px; margin: 0 auto; padding: 24px; }
+
+        .creator-panel { display: none; }
+        .creator-panel.active { display: block; }
+
+        .section {
+            background: var(--surface); border-radius: 12px; padding: 24px;
+            margin-bottom: 16px; border: 1px solid var(--border);
+        }
+        .section-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+            cursor: pointer; user-select: none;
+        }
+        .section-header h2 { font-size: 1.1em; color: var(--accent); }
+        .section-num {
+            background: var(--accent); color: var(--bg); width: 26px; height: 26px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 0.8em; font-weight: 700; flex-shrink: 0;
+        }
+        .section-toggle { margin-left: auto; color: var(--muted); font-size: 1.2em; }
+        .section-body.collapsed { display: none; }
+
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 4px; color: var(--muted); font-size: 0.85em; font-weight: 500; }
+        .required::after { content: ' *'; color: var(--red); }
+
+        input[type="text"], input[type="number"], input[type="date"], textarea, select {
+            width: 100%; padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text); font-size: 0.9em; font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); }
+        textarea { min-height: 80px; resize: vertical; }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+        @media (max-width: 640px) { .row, .row3 { grid-template-columns: 1fr; } }
+
+        .checks { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px; }
+        .check-item {
+            display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+            background: var(--bg); border-radius: 6px; cursor: pointer; font-size: 0.88em;
+        }
+        .check-item:hover { background: var(--surface2); }
+        .check-item input { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+
+        .radio-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .radio-item {
+            padding: 8px 14px; background: var(--bg); border: 1px solid var(--border);
+            border-radius: 6px; cursor: pointer; font-size: 0.85em; transition: all 0.2s;
+        }
+        .radio-item:hover { border-color: var(--accent); }
+        .radio-item.selected { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+        .error-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+        .error-table th, .error-table td {
+            padding: 8px; border: 1px solid var(--border); font-size: 0.85em; text-align: left;
+        }
+        .error-table th { background: var(--surface2); color: var(--muted); }
+        .error-table input, .error-table select {
+            background: transparent; border: none; color: var(--text); width: 100%; padding: 4px;
+        }
+        .add-row-btn {
+            margin-top: 6px; padding: 6px 12px; background: var(--surface2); border: 1px dashed var(--border);
+            color: var(--muted); border-radius: 6px; cursor: pointer; font-size: 0.8em;
+        }
+        .add-row-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer;
+            font-size: 0.9em; font-weight: 600; transition: all 0.2s;
+        }
+        .btn-accent { background: var(--accent); color: var(--bg); }
+        .btn-accent:hover { filter: brightness(1.1); }
+        .btn-green { background: var(--green); color: var(--bg); }
+        .btn-green:hover { filter: brightness(1.1); }
+        .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+        .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-red { background: var(--red); color: var(--bg); }
+
+        .progress {
+            background: var(--bg); border-radius: 10px; height: 6px; margin: 8px 0; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--accent), var(--green));
+            border-radius: 10px; transition: width 0.4s;
+        }
+        .progress-text { font-size: 0.8em; color: var(--muted); text-align: right; }
+
+        .toast {
+            position: fixed; bottom: 20px; right: 20px; padding: 12px 20px;
+            background: var(--green); color: var(--bg); border-radius: 8px;
+            font-weight: 600; font-size: 0.9em; opacity: 0; transition: opacity 0.3s;
+            z-index: 1000;
+        }
+        .toast.show { opacity: 1; }
+
+        .prefilled { border-left: 3px solid var(--accent2) !important; }
+        .prefilled-badge {
+            display: inline-block; padding: 2px 6px; background: var(--accent2);
+            color: white; border-radius: 4px; font-size: 0.7em; margin-left: 6px;
+        }
+
+        .overview-panel { display: none; }
+        .overview-panel.active { display: block; }
+        .overview-card {
+            background: var(--surface); border-radius: 12px; padding: 20px;
+            border: 1px solid var(--border); margin-bottom: 12px;
+        }
+        .overview-card h3 { color: var(--accent); margin-bottom: 8px; }
+        .stat { display: inline-block; margin-right: 16px; }
+        .stat-val { font-size: 1.4em; font-weight: 700; color: var(--text); }
+        .stat-label { font-size: 0.75em; color: var(--muted); }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Creator Analysis Tool</h1>
+    <p>Jonas Martens - BA Thesis: Polish German-Teaching Creators on Instagram</p>
+    <div class="header-actions">
+        <button class="btn btn-green" onclick="exportAll()">Export All (JSON)</button>
+        <button class="btn btn-ghost" onclick="exportCSV()">Export CSV</button>
+        <button class="btn btn-ghost" onclick="importData()">Import Data</button>
+        <button class="btn btn-red" onclick="clearAll()">Reset All</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="handleImport(event)">
+    </div>
+</div>
+
+<div class="tabs" id="tabs">
+    <button class="tab active" onclick="showTab('overview')">Overview</button>
+</div>
+
+<div class="container">
+    <div id="overview-panel" class="overview-panel active">
+        <div class="overview-card">
+            <h3>Overall Progress</h3>
+            <div class="progress"><div class="progress-fill" id="overall-progress" style="width:0%"></div></div>
+            <div class="progress-text" id="overall-progress-text">0% complete</div>
+        </div>
+        <div id="overview-cards"></div>
+    </div>
+    <div id="panels"></div>
+</div>
+
+<div class="toast" id="toast">Saved!</div>
+
+<script>
+const CREATORS = [
+    { id: 'paula', handle: '@deutsch.frag.paula', name: 'Paulina Boinska', followers: '', prefill: {} },
+    { id: 'ania', handle: '@ania_germania', name: 'Anna Mazurek', followers: '', prefill: {} },
+    { id: 'lucy', handle: '@deutsch.mit.lucy', name: '\u0141ucja B\u0142aszczyk', followers: '', prefill: {} },
+    { id: 'olivia', handle: '@_szprechaj', name: 'Olivia Miku\u0142a', followers: '', prefill: {} },
+    { id: 'natalia', handle: '@niemieckizprzyjemnoscia', name: 'Natalia Kamysz', followers: '', prefill: {} }
+];
+
+const SECTIONS = [
+    { num: 1, title: 'Profile & Bio', fields: [
+        { id: 'handle', label: 'Instagram Handle', type: 'text', required: true, prefillKey: 'handle' },
+        { id: 'name', label: 'Full Name', type: 'text', required: true, prefillKey: 'name' },
+        { id: 'analysis_date', label: 'Date of Analysis', type: 'date' },
+        { id: 'follower_count', label: 'Follower Count', type: 'number', prefillKey: 'followers' },
+        { id: 'total_posts', label: 'Total Posts', type: 'number', prefillKey: 'posts' },
+        { id: 'bio_text', label: 'Exact Bio Text (copy verbatim from Instagram)', type: 'textarea', required: true, prefillKey: 'bio' },
+        { id: 'bio_languages', label: 'Languages Used in Bio', type: 'checks', options: ['Polish','German','English','Other'] },
+        { id: 'bio_contains', label: 'Bio Contains', type: 'checks', options: [
+            'Credential claims','Experience claims','Native speaker claim','Student/client counts',
+            'Link to paid content','Other platforms mentioned','Email for contact','Hashtags'
+        ]},
+        { id: 'other_platforms', label: 'Other Platforms & Links (TikTok, YouTube, website, etc.)', type: 'textarea', prefillKey: 'platforms' },
+    ]},
+    { num: 2, title: 'Credential Claims', fields: [
+        { id: 'explicit_claims', label: 'Explicit Claims (directly stated) - one per line: Claim | Exact Quote | Verifiable? (Yes/No)', type: 'textarea', prefillKey: 'claims' },
+        { id: 'implicit_claims', label: 'Implicit Claims (suggested but not stated) - one per line: What\'s Implied | How It\'s Suggested', type: 'textarea' },
+        { id: 'missing_credentials', label: 'Credentials NOT Mentioned (notable absences)', type: 'checks', options: [
+            'University degree in German','Teaching certification (TEFL/DaF)',
+            'Goethe-Institut certification','CEFR level achieved',
+            'Academic publications','Formal employment (school/university)'
+        ]},
+    ]},
+    { num: 3, title: 'Authority Construction', fields: [
+        { id: 'visual_presentation', label: 'Visual Presentation', type: 'checks', options: [
+            'Professional appearance','Casual/relatable appearance','Studio setting','Home setting',
+            'Branded graphics','Consistent color scheme','Face visible in most content'
+        ]},
+        { id: 'visual_notes', label: 'Notes on Visual Presentation', type: 'textarea' },
+        { id: 'language_used', label: 'Language Used in Content', type: 'radio', options: [
+            'Predominantly Polish','Predominantly German','Mix of both','English elements'
+        ]},
+        { id: 'tone_of_address', label: 'Tone of Address', type: 'radio', options: [
+            'Expert/authoritative ("I\'ll teach you...")','Peer/friendly ("Let\'s learn together...")',
+            'Humble ("I\'m still learning too...")','Other'
+        ]},
+        { id: 'tone_notes', label: 'If "Other", describe:', type: 'text' },
+        { id: 'expertise_markers', label: 'Expertise Markers Used', type: 'checks', options: [
+            'Technical grammar terminology','References to linguistic rules','Comparison with other languages',
+            'Cultural explanations','Common mistake corrections','CEFR level references','Test preparation content'
+        ]},
+    ]},
+    { num: 4, title: 'Content Sample', fields: [
+        { id: 'sample_size', label: 'Number of Posts Analyzed', type: 'number' },
+        { id: 'date_from', label: 'Sample Date Range - From', type: 'date' },
+        { id: 'date_to', label: 'Sample Date Range - To', type: 'date' },
+        { id: 'content_reels', label: 'Reels/Videos Count', type: 'number' },
+        { id: 'content_images', label: 'Static Images Count', type: 'number' },
+        { id: 'content_carousels', label: 'Carousels Count', type: 'number' },
+        { id: 'content_highlights', label: 'Stories Highlights Count', type: 'number' },
+        { id: 'topics_covered', label: 'Topics Covered', type: 'checks', options: [
+            'Vocabulary','Grammar','Pronunciation','Common mistakes','Cultural content',
+            'Motivation/mindset','Learning tips','Course promotion','Other'
+        ]},
+        { id: 'errors_observed', label: 'Errors Observed (one per line: Post Description | Error | Type)', type: 'textarea' },
+        { id: 'quality_assessment', label: 'Overall Quality Assessment', type: 'radio', options: [
+            'No errors observed in sample','Minor errors (typos, minor slips)',
+            'Some errors (occasional grammar mistakes)','Significant errors (frequent/concerning)'
+        ]},
+        { id: 'accuracy_notes', label: 'Notes on Teaching Accuracy', type: 'textarea' },
+    ]},
+    { num: 5, title: 'Engagement Analysis', fields: [
+        { id: 'avg_likes', label: 'Average Likes (across sample)', type: 'number' },
+        { id: 'avg_comments', label: 'Average Comments (across sample)', type: 'number' },
+        { id: 'engagement_rate', label: 'Engagement Rate % (likes+comments / followers)', type: 'text' },
+        { id: 'comment_types', label: 'Types of Comments Observed', type: 'checks', options: [
+            'Praise/thanks','Questions about German','Corrections from viewers',
+            'Requests for topics','Testimonials','Off-topic'
+        ]},
+        { id: 'response_pattern', label: 'Creator\'s Response Pattern', type: 'radio', options: [
+            'Responds to most comments','Responds selectively','Rarely responds'
+        ]},
+        { id: 'response_style', label: 'Response Style', type: 'checks', options: [
+            'Uses emojis/brief replies','Gives detailed answers'
+        ]},
+        { id: 'handles_corrections', label: 'How Creator Handles Corrections', type: 'textarea' },
+    ]},
+    { num: 6, title: 'Commercial Model', fields: [
+        { id: 'paid_offerings', label: 'Paid Offerings Identified', type: 'checks', options: [
+            'Online courses','E-books/PDFs','Private lessons','Group classes',
+            'Membership/subscription','Affiliate links','Sponsored content','Merchandise'
+        ]},
+        { id: 'pricing', label: 'Pricing Information (if visible)', type: 'textarea', prefillKey: 'pricing' },
+        { id: 'sales_approach', label: 'Sales Approach', type: 'radio', options: [
+            'Aggressive (frequent CTAs, urgency)','Moderate (regular but not pushy)',
+            'Soft (occasional mentions)','None visible'
+        ]},
+    ]},
+    { num: 7, title: 'Parasocial Relationship (PSR)', fields: [
+        { id: 'self_disclosure', label: 'Self-Disclosure - What personal info does creator share?', type: 'checks', options: [
+            'Learning journey','Personal life','Struggles/failures','Success stories',
+            'Daily routines','Family/relationships','Other'
+        ]},
+        { id: 'connection_building', label: 'Connection Building Techniques', type: 'checks', options: [
+            'Uses "you" directly','Asks questions to audience','Responds to DMs',
+            'Shows behind-the-scenes','Admits mistakes','Shows vulnerability','Uses humor'
+        ]},
+        { id: 'consistency', label: 'Consistency', type: 'checks', options: [
+            'Consistent posting schedule','Consistent persona/style','Regular series/features','Reliable presence'
+        ]},
+    ]},
+    { num: 8, title: 'Summary Assessment', fields: [
+        { id: 'authority_strategy', label: 'Authority Construction Strategy (1-2 sentences)', type: 'textarea', required: true },
+        { id: 'strongest_signal', label: 'Strongest Authority Signal', type: 'textarea' },
+        { id: 'weakest_aspect', label: 'Weakest Authority Aspect', type: 'textarea' },
+        { id: 'key_quote', label: 'Key Quote/Example (for thesis use)', type: 'textarea' },
+        { id: 'research_connection', label: 'Connection to Research Question', type: 'textarea', required: true },
+        { id: 'compare_credentials', label: 'vs. Others: Credentials', type: 'radio', options: ['More','Less','Same'] },
+        { id: 'compare_authority', label: 'vs. Others: Authority Signals', type: 'radio', options: ['Stronger','Weaker','Similar'] },
+        { id: 'compare_quality', label: 'vs. Others: German Quality', type: 'radio', options: ['Better','Worse','Similar'] },
+        { id: 'compare_commercial', label: 'vs. Others: Commercial Model', type: 'radio', options: ['More','Less','Similar'] },
+        { id: 'compare_psr', label: 'vs. Others: PSR Elements', type: 'radio', options: ['Stronger','Weaker','Similar'] },
+    ]},
+];
+
+// Build UI
+const tabsEl = document.getElementById('tabs');
+const panelsEl = document.getElementById('panels');
+
+CREATORS.forEach((c, i) => {
+    // Tab
+    const btn = document.createElement('button');
+    btn.className = 'tab';
+    btn.id = `tab-${c.id}`;
+    btn.onclick = () => showTab(c.id);
+    btn.innerHTML = `${c.handle} <span class="status" id="status-${c.id}"></span>`;
+    tabsEl.appendChild(btn);
+
+    // Panel
+    const panel = document.createElement('div');
+    panel.className = 'creator-panel';
+    panel.id = `panel-${c.id}`;
+    panel.innerHTML = buildCreatorForm(c);
+    panelsEl.appendChild(panel);
+});
+
+function buildCreatorForm(creator) {
+    let html = `<h2 style="margin-bottom:16px;color:var(--accent)">${creator.name} <span style="color:var(--muted);font-weight:400">${creator.handle}</span></h2>`;
+    html += `<div class="progress"><div class="progress-fill" id="progress-${creator.id}" style="width:0%"></div></div>`;
+    html += `<div class="progress-text" id="progress-text-${creator.id}">0% complete</div>`;
+
+    SECTIONS.forEach(sec => {
+        html += `<div class="section">`;
+        html += `<div class="section-header" onclick="toggleSection('${creator.id}-sec${sec.num}')">`;
+        html += `<span class="section-num">${sec.num}</span>`;
+        html += `<h2>${sec.title}</h2>`;
+        html += `<span class="section-toggle" id="toggle-${creator.id}-sec${sec.num}">-</span>`;
+        html += `</div>`;
+        html += `<div class="section-body" id="body-${creator.id}-sec${sec.num}">`;
+
+        sec.fields.forEach(f => {
+            const fid = `${creator.id}_${f.id}`;
+            const isPrefilled = f.prefillKey && creator.prefill && creator.prefill[f.prefillKey];
+            html += `<div class="form-group">`;
+            html += `<label class="${f.required ? 'required' : ''}">${f.label}`;
+            if (isPrefilled) html += `<span class="prefilled-badge">pre-filled</span>`;
+            html += `</label>`;
+
+            if (f.type === 'text' || f.type === 'number' || f.type === 'date') {
+                const val = isPrefilled ? creator.prefill[f.prefillKey] : '';
+                html += `<input type="${f.type}" id="${fid}" data-field="${f.id}" data-creator="${creator.id}" `;
+                html += `value="${escHtml(String(val))}" onchange="save()" class="${isPrefilled ? 'prefilled' : ''}">`;
+            } else if (f.type === 'textarea') {
+                const val = isPrefilled ? creator.prefill[f.prefillKey] : '';
+                html += `<textarea id="${fid}" data-field="${f.id}" data-creator="${creator.id}" `;
+                html += `onchange="save()" class="${isPrefilled ? 'prefilled' : ''}">${escHtml(String(val))}</textarea>`;
+            } else if (f.type === 'checks') {
+                html += `<div class="checks">`;
+                f.options.forEach(opt => {
+                    html += `<label class="check-item"><input type="checkbox" id="${fid}_${slugify(opt)}" `;
+                    html += `data-field="${f.id}" data-opt="${opt}" data-creator="${creator.id}" onchange="save()"> ${opt}</label>`;
+                });
+                html += `</div>`;
+            } else if (f.type === 'radio') {
+                html += `<div class="radio-group" id="${fid}_group">`;
+                f.options.forEach(opt => {
+                    html += `<div class="radio-item" data-field="${f.id}" data-opt="${opt}" data-creator="${creator.id}" `;
+                    html += `onclick="selectRadio(this)">${opt}</div>`;
+                });
+                html += `</div>`;
+            }
+            html += `</div>`;
+        });
+
+        html += `</div></div>`;
+    });
+
+    return html;
+}
+
+function escHtml(s) { return s.replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function slugify(s) { return s.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+$/,''); }
+
+function selectRadio(el) {
+    el.parentElement.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    save();
+}
+
+function toggleSection(id) {
+    const body = document.getElementById('body-' + id);
+    const toggle = document.getElementById('toggle-' + id);
+    body.classList.toggle('collapsed');
+    toggle.textContent = body.classList.contains('collapsed') ? '+' : '-';
+}
+
+let activeTab = 'overview';
+function showTab(id) {
+    activeTab = id;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.creator-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('overview-panel').classList.remove('active');
+
+    if (id === 'overview') {
+        document.querySelector('.tabs .tab:first-child').classList.add('active');
+        document.getElementById('overview-panel').classList.add('active');
+        updateOverview();
+    } else {
+        document.getElementById('tab-' + id).classList.add('active');
+        document.getElementById('panel-' + id).classList.add('active');
+    }
+}
+
+function collectData() {
+    const data = {};
+    CREATORS.forEach(c => {
+        data[c.id] = { handle: c.handle, name: c.name };
+        SECTIONS.forEach(sec => {
+            sec.fields.forEach(f => {
+                const fid = `${c.id}_${f.id}`;
+                if (f.type === 'text' || f.type === 'number' || f.type === 'date' || f.type === 'textarea') {
+                    const el = document.getElementById(fid);
+                    if (el) data[c.id][f.id] = el.value;
+                } else if (f.type === 'checks') {
+                    const checked = [];
+                    f.options.forEach(opt => {
+                        const cb = document.getElementById(`${fid}_${slugify(opt)}`);
+                        if (cb && cb.checked) checked.push(opt);
+                    });
+                    data[c.id][f.id] = checked;
+                } else if (f.type === 'radio') {
+                    const selected = document.querySelector(`#${fid}_group .radio-item.selected`);
+                    data[c.id][f.id] = selected ? selected.dataset.opt : '';
+                }
+            });
+        });
+    });
+    return data;
+}
+
+function save() {
+    const data = collectData();
+    localStorage.setItem('thesis_creator_data', JSON.stringify(data));
+    updateProgress();
+    showToast('Auto-saved');
+}
+
+function loadData() {
+    const saved = localStorage.getItem('thesis_creator_data');
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    CREATORS.forEach(c => {
+        if (!data[c.id]) return;
+        SECTIONS.forEach(sec => {
+            sec.fields.forEach(f => {
+                const fid = `${c.id}_${f.id}`;
+                const val = data[c.id][f.id];
+                if (val === undefined) return;
+                if (f.type === 'text' || f.type === 'number' || f.type === 'date' || f.type === 'textarea') {
+                    const el = document.getElementById(fid);
+                    if (el) el.value = val;
+                } else if (f.type === 'checks' && Array.isArray(val)) {
+                    val.forEach(opt => {
+                        const cb = document.getElementById(`${fid}_${slugify(opt)}`);
+                        if (cb) cb.checked = true;
+                    });
+                } else if (f.type === 'radio' && val) {
+                    const items = document.querySelectorAll(`#${fid}_group .radio-item`);
+                    items.forEach(item => {
+                        if (item.dataset.opt === val) item.classList.add('selected');
+                    });
+                }
+            });
+        });
+    });
+    updateProgress();
+}
+
+function getCompletionPercent(creatorId) {
+    let total = 0, filled = 0;
+    SECTIONS.forEach(sec => {
+        sec.fields.forEach(f => {
+            total++;
+            const fid = `${creatorId}_${f.id}`;
+            if (f.type === 'text' || f.type === 'number' || f.type === 'date' || f.type === 'textarea') {
+                const el = document.getElementById(fid);
+                if (el && el.value.trim()) filled++;
+            } else if (f.type === 'checks') {
+                let any = false;
+                f.options.forEach(opt => {
+                    const cb = document.getElementById(`${fid}_${slugify(opt)}`);
+                    if (cb && cb.checked) any = true;
+                });
+                if (any) filled++;
+            } else if (f.type === 'radio') {
+                const sel = document.querySelector(`#${fid}_group .radio-item.selected`);
+                if (sel) filled++;
+            }
+        });
+    });
+    return total > 0 ? Math.round((filled / total) * 100) : 0;
+}
+
+function updateProgress() {
+    let totalPct = 0;
+    CREATORS.forEach(c => {
+        const pct = getCompletionPercent(c.id);
+        totalPct += pct;
+        const bar = document.getElementById(`progress-${c.id}`);
+        const text = document.getElementById(`progress-text-${c.id}`);
+        if (bar) bar.style.width = pct + '%';
+        if (text) text.textContent = pct + '% complete';
+
+        const status = document.getElementById(`status-${c.id}`);
+        if (status) {
+            status.className = 'status';
+            if (pct === 100) status.classList.add('done');
+            else if (pct > 0) status.classList.add('partial');
+        }
+    });
+    const overall = Math.round(totalPct / CREATORS.length);
+    const oBar = document.getElementById('overall-progress');
+    const oText = document.getElementById('overall-progress-text');
+    if (oBar) oBar.style.width = overall + '%';
+    if (oText) oText.textContent = overall + '% complete';
+}
+
+function updateOverview() {
+    const cards = document.getElementById('overview-cards');
+    let html = '';
+    CREATORS.forEach(c => {
+        const pct = getCompletionPercent(c.id);
+        html += `<div class="overview-card">
+            <h3>${c.name} <span style="color:var(--muted);font-weight:400">${c.handle}</span></h3>
+            <div class="progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+            <div class="progress-text">${pct}% complete</div>
+            <button class="btn btn-accent" style="margin-top:8px" onclick="showTab('${c.id}')">Edit</button>
+        </div>`;
+    });
+    cards.innerHTML = html;
+}
+
+function exportAll() {
+    const data = collectData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'creator_analysis_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function exportCSV() {
+    const data = collectData();
+    const allFields = [];
+    SECTIONS.forEach(sec => sec.fields.forEach(f => {
+        if (!allFields.includes(f.id)) allFields.push(f.id);
+    }));
+    let csv = 'creator,' + allFields.join(',') + '\n';
+    CREATORS.forEach(c => {
+        const row = [c.id];
+        allFields.forEach(fid => {
+            let val = data[c.id][fid];
+            if (Array.isArray(val)) val = val.join('; ');
+            val = String(val || '').replace(/"/g, '""');
+            if (val.includes(',') || val.includes('\n') || val.includes('"')) val = '"' + val + '"';
+            row.push(val);
+        });
+        csv += row.join(',') + '\n';
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'creator_analysis_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData() { document.getElementById('importFile').click(); }
+
+function handleImport(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        try {
+            const data = JSON.parse(ev.target.result);
+            localStorage.setItem('thesis_creator_data', JSON.stringify(data));
+            location.reload();
+        } catch(err) { alert('Invalid JSON file'); }
+    };
+    reader.readAsText(file);
+}
+
+function clearAll() {
+    if (confirm('Are you sure? This will delete all entered data.')) {
+        localStorage.removeItem('thesis_creator_data');
+        location.reload();
+    }
+}
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 1500);
+}
+
+// Init
+loadData();
+updateOverview();
+</script>
+</body>
+</html>
