@@ -128,7 +128,7 @@
     "bio": "Entrepreneur [PROFILE CATEGORY TAG IN INSTA UI]\n🇩🇪Niemiecki krok po kroku\n👩🏼‍💻Mieszkam w DE, uczę praktycznie i skutecznie\n📚5500+ osób korzysta z moich materiałów\n🤰🏼Grupa + e-book ciąża w DE\nwww.jezykniemiecki-dlakazdego.edu.pl/linki",
     "followers": "37,382",
     "posts": "1176",
-    "authority": "",
+    "authority": "Her bio mentions that she lives in Germany, as if that had any meaning. An immigrant who never learns the language can also claim to live there, it's not an authority marker. Also she claims in her bio to \"teach practically and effectively\" which is stupid because it should be obvious",
     "quality": "",
     "psr": "",
     "selling": "",
@@ -175,9 +175,16 @@
       "Pronunciation",
       "Course promo"
     ],
-    "signals": [],
-    "psrtags": [],
-    "offerings": []
+    "signals": [
+      "Grammar terminology",
+      "Branded graphics"
+    ],
+    "psrtags": [
+      "Direct "
+    ],
+    "offerings": [
+      "E-books/PDFs"
+    ]
   },
   "lucy": {
     "bio": "",
@@ -429,5 +436,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-26T19:16:34.378Z"
+  "_lastSaved": "2026-03-26T19:18:26.056Z"
 }
