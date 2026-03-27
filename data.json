@@ -190,7 +190,7 @@
     "bio": "⇨Pomogę ci zacząć mówić po niemiecku🇩🇪\n⇨Tysiące osób już mi zaufało\n⭐️Ponad 15 lat praktyki w nauczaniu\n⤹ ZACZNIJ TUTAJ🇩🇪\nlinktr.ee/deutsch.mit.lucy",
     "followers": "31,631",
     "posts": "557",
-    "authority": "",
+    "authority": "Her red outfit and ",
     "quality": "",
     "psr": "",
     "selling": "",
@@ -230,13 +230,29 @@
     "lang": "Mix of both",
     "tone": "Motivational coach",
     "gerquality": "Minor slips only",
-    "sales": "",
-    "topics": [],
-    "signals": [],
-    "psrtags": [
-      "Responds to comments"
+    "sales": "Moderate",
+    "topics": [
+      "Vocabulary",
+      "Grammar",
+      "Pronunciation",
+      "Common mistakes",
+      "Motivation",
+      "Learning tips",
+      "Course promo"
     ],
-    "offerings": []
+    "signals": [
+      "Branded graphics",
+      "Professional look",
+      "Consistent style"
+    ],
+    "psrtags": [
+      "Direct ",
+      "Responds to comments",
+      "Asks audience questions"
+    ],
+    "offerings": [
+      "Book"
+    ]
   },
   "olivia": {
     "bio": "",
@@ -438,5 +454,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-27T17:33:42.107Z"
+  "_lastSaved": "2026-03-27T17:35:25.655Z"
 }
