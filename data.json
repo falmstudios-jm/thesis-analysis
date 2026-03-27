@@ -197,7 +197,7 @@
     "freeform": "",
     "r1_date": "https://www.instagram.com/p/DBdzlgHo-_Y/",
     "r1_topic": "Book promo ad",
-    "r1_notes": "",
+    "r1_notes": "This is a full-scale video ad with b-rolls, her voice over and a book presented. She reads an advertizing script taylored at telling the viewer that they need her book to finally \"reach her destination\", which is knowing better German. The entire post is in Polish only.",
     "r1_engagement": "70-100 / 15",
     "r2_date": "",
     "r2_topic": "",
@@ -233,7 +233,9 @@
     "sales": "",
     "topics": [],
     "signals": [],
-    "psrtags": [],
+    "psrtags": [
+      "Responds to comments"
+    ],
     "offerings": []
   },
   "olivia": {
@@ -436,5 +438,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-27T16:33:29.861Z"
+  "_lastSaved": "2026-03-27T16:35:24.458Z"
 }
