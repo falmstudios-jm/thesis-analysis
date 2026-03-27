@@ -195,10 +195,10 @@
     "psr": "",
     "selling": "",
     "freeform": "",
-    "r1_date": "",
-    "r1_topic": "",
+    "r1_date": "https://www.instagram.com/p/DBdzlgHo-_Y/",
+    "r1_topic": "Book promo ad",
     "r1_notes": "",
-    "r1_engagement": "",
+    "r1_engagement": "70-100 / 15",
     "r2_date": "",
     "r2_topic": "",
     "r2_notes": "",
@@ -436,5 +436,5 @@
     "psrtags": [],
     "offerings": []
   },
-  "_lastSaved": "2026-03-27T16:32:06.383Z"
+  "_lastSaved": "2026-03-27T16:33:29.861Z"
 }
